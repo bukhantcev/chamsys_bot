@@ -68,11 +68,13 @@ async def func1(message: Message, state: FSMContext):
         await message.reply(answer)
         await state.update_data(thread_id=thread_id)
         await state.set_state(DialogFSM.threads)
-        await asyncio.sleep(60)
-        ai.delete_threads(thread_id)
-        print('final')
-        await state.clear()
-
+        await asyncio.sleep(3600)
+        try:
+            ai.delete_threads(thread_id)
+            print('final')
+            await state.clear()
+        except:
+            pass
     else:
         await message.reply("Задайте вопрос")
 @dp.message(DialogFSM.threads)
@@ -83,6 +85,11 @@ async def dialog(message: Message, state: FSMContext):
     ai.create_run(thread_id, ai.assistant)
     answer = ai.message_list(thread_id)
     await message.reply(answer)
+    if message.text.lower() == 'пока':
+        ai.delete_threads(thread_id)
+        print('final')
+        await message.reply("Пока")
+        await state.clear()
 
 
 
